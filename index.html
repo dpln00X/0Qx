@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dolphin0x | Live Feed</title>
+    <title>Ev0lynn.0qx</title>
     <style>
         * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { margin: 0; background-color: #0b1120; color: #f8fafc; padding: 0; padding-bottom: 40px; }
@@ -15,7 +15,7 @@
 
         .container { max-width: 600px; margin: 0 auto; padding: 15px; }
 
-        /* ADMIN PANEL */
+        
         .admin-panel { display: none; background: #1e293b; border: 1px solid #38bdf8; padding: 20px; border-radius: 16px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
         .admin-panel h2 { margin-top: 0; color: #38bdf8; font-size: 1.2rem; }
         .form-group { margin-bottom: 15px; }
@@ -23,7 +23,7 @@
         .form-group input[type="text"], .form-group textarea { width: 100%; background: #0f172a; border: 1px solid #475569; color: white; padding: 12px; border-radius: 8px; outline: none; font-size: 1rem; }
         .btn-submit { width: 100%; background: #38bdf8; color: #0b1120; border: none; padding: 14px; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; }
 
-        /* FEED */
+     
         .feed { display: flex; flex-direction: column; gap: 25px; }
         .post-card { background: #1e293b; border-radius: 16px; border: 1px solid #334155; overflow: hidden; }
         .post-img { width: 100%; max-height: 350px; object-fit: cover; display: block; background: #0f172a; }
@@ -32,7 +32,7 @@
         .post-title { margin: 0 0 10px 0; font-size: 1.3rem; color: #fff; }
         .post-text { color: #cbd5e1; line-height: 1.5; font-size: 0.95rem; margin-bottom: 20px; white-space: pre-wrap; }
 
-        /* REACTIES */
+
         .comments-section { border-top: 1px solid #334155; padding-top: 15px; margin-top: 15px; }
         .comments-title { font-size: 0.9rem; color: #94a3b8; margin-bottom: 10px; font-weight: bold; }
         .comment-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
@@ -50,31 +50,31 @@
 <body>
 
     <header>
-        <h1>Dolphin0x Live Feed</h1>
+        <h1 id="siteTitle">Ev0lynn.0qx</h1>
         <button id="adminLoginBtn" class="btn-admin-login" onclick="handleAdminPoort()">🔒 Login</button>
     </header>
 
     <div class="container">
         
         <div id="adminPanel" class="admin-panel">
-            <h2>Nieuw bericht plaatsen</h2>
+            <h2 id="adminTitle">Nieuw bericht plaatsen</h2>
             <div class="form-group">
-                <label>Titel van je post</label>
-                <input type="text" id="postTitle" placeholder="Bijv: Live database gekoppeld!">
+                <label id="lblPostTitle">Titel van je post</label>
+                <input type="text" id="postTitle">
             </div>
             <div class="form-group">
-                <label>Afbeelding kiezen</label>
+                <label id="lblPostImage">photo</label>
                 <input type="file" id="postImage" accept="image/*">
             </div>
             <div class="form-group">
-                <label>Jouw verhaal / Tekst</label>
-                <textarea id="postText" rows="5" placeholder="Typ hier je bericht..."></textarea>
+                <label id="lblPostText">post</label>
+                <textarea id="postText" rows="5"></textarea>
             </div>
-            <button class="btn-submit" onclick="publiceerPost()">Gooi live online 🚀</button>
+            <button id="btnSubmitPost" class="btn-submit" onclick="publiceerPost()">Gooi live online 🚀</button>
         </div>
 
         <div id="feedContainer" class="feed">
-            <p style="text-align:center; color:#64748b; margin-top:40px;">Berichten live aan het ophalen...</p>
+            <p id="feedLoadingStatus" style="text-align:center; color:#64748b; margin-top:40px;">Berichten live aan het ophalen...</p>
         </div>
 
     </div>
@@ -82,30 +82,102 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, orderBy, query, doc, updateDoc, arrayUnion, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-        // ⚠️ VERVANG DEZE GEGEVENS MET JOUW EIGEN FIREBASE CONFIG!
         const firebaseConfig = {
-            apiKey: "HIER_JOUW_API_KEY",
-            authDomain: "HIER_JOUW_AUTH_DOMAIN",
-            projectId: "HIER_JOUW_PROJECT_ID",
-            storageBucket: "HIER_JOUW_STORAGE_BUCKET",
-            messagingSenderId: "HIER_JOUW_MESSAGING_SENDER_ID",
-            appId: "HIER_JOUW_APP_ID"
+            apiKey: "AIzaSyAs52IrFL1WzGQezk6FivtcO4H1lKvZ0hM",
+            authDomain: "qx-9f490.firebaseapp.com",
+            projectId: "qx-9f490",
+            storageBucket: "qx-9f490.firebasestorage.app",
+            messagingSenderId: "238193409517",
+            appId: "1:238193409517:web:34e73bfcee73528729bbe4"
         };
 
-        // Start Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        
+        const translations = {
+            nl: {
+                login: "🔒 Login",
+                logout: "🔓 Log uit",
+                adminTitle: "Nieuw bericht plaatsen",
+                lblPostTitle: "Titel van je post",
+                phPostTitle: "Bijv: Live van start gegaan!",
+                lblPostImage: "Afbeelding kiezen",
+                lblPostText: "Jouw verhaal / Tekst",
+                phPostText: "Typ hier je bericht...",
+                btnSubmitPost: "Gooi live online 🚀",
+                loading: "Berichten live aan het ophalen uit de cloud...",
+                noPosts: "Er zijn nog geen live berichten geplaatst.",
+                deleteBtn: "🗑️ Verwijder Post",
+                commentsTitle: "Reacties",
+                phName: "Naam...",
+                phComment: "Schrijf een reactie...",
+                btnComment: "Drop",
+                anonymous: "Anoniem",
+                promptEmail: "Voer Admin E-mail in:",
+                promptPass: "Voer Admin Wachtwoord in:",
+                alertAuthError: "Toegang geweigerd! Onjuiste gegevens.",
+                alertFillFields: "Vul een titel en tekst in!",
+                alertUploadError: "Uploaden geweigerd door databasebeveiliging!",
+                alertDeleteConfirm: "Weet je zeker dat je deze post wilt deleten?",
+                alertDeleteError: "Verwijderen mislukt. Geen rechten."
+            },
+            en: {
+                login: "🔒 Login",
+                logout: "🔓 Log out",
+                adminTitle: "Publish New Post",
+                lblPostTitle: "Post Title",
+                phPostTitle: "E.g., Live feed is up!",
+                lblPostImage: "Choose Image",
+                lblPostText: "Your Story / Text",
+                phPostText: "Type your message here...",
+                btnSubmitPost: "Go Live Online 🚀",
+                loading: "Loading live posts from the cloud...",
+                noPosts: "No live posts have been published yet.",
+                deleteBtn: "🗑️ Delete Post",
+                commentsTitle: "Comments",
+                phName: "Name...",
+                phComment: "Write a comment...",
+                btnComment: "Drop",
+                anonymous: "Anonymous",
+                promptEmail: "Enter Admin Email:",
+                promptPass: "Enter Admin Password:",
+                alertAuthError: "Access denied! Incorrect credentials.",
+                alertFillFields: "Please fill in a title and text!",
+                alertUploadError: "Upload denied by database security!",
+                alertDeleteConfirm: "Are you sure you want to delete this post?",
+                alertDeleteError: "Deletion failed. Unauthorized."
+            }
+        };
+
+      
+        const browserLang = navigator.language.startsWith('nl') ? 'nl' : 'en';
+        const t = translations[browserLang]; 
+
+      
+        function pasStatischeVertalingenToe() {
+            document.getElementById('adminTitle').innerText = t.adminTitle;
+            document.getElementById('lblPostTitle').innerText = t.lblPostTitle;
+            document.getElementById('postTitle').placeholder = t.phPostTitle;
+            document.getElementById('lblPostImage').innerText = t.lblPostImage;
+            document.getElementById('lblPostText').innerText = t.lblPostText;
+            document.getElementById('postText').placeholder = t.phPostText;
+            document.getElementById('btnSubmitPost').innerText = t.btnSubmitPost;
+            document.getElementById('feedLoadingStatus').innerText = t.loading;
+        }
+        pasStatischeVertalingenToe();
+
 
         let isAdmin = false;
-        const ADMIN_WACHTWOORD = "dolphin2026";
         let gekozenAfbeeldingBase64 = "";
 
-        // Foto omzetten naar tekst zodat het in Firestore past
+     
         document.getElementById('postImage').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
-                // Maak foto iets kleiner om Firestore limieten te sparen (max 1MB per post)
                 const reader = new FileReader();
                 reader.onloadend = function() {
                     gekozenAfbeeldingBase64 = reader.result;
@@ -114,35 +186,47 @@
             }
         });
 
-        // Admin Login functie beschikbaar maken voor de HTML knop
-        window.handleAdminPoort = function() {
-            if (isAdmin) {
+      
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                isAdmin = true;
+                document.getElementById('adminPanel').style.display = 'block';
+                document.getElementById('adminLoginBtn').innerText = t.logout;
+                document.getElementById('adminLoginBtn').classList.add('logged-in');
+            } else {
                 isAdmin = false;
                 document.getElementById('adminPanel').style.display = 'none';
-                document.getElementById('adminLoginBtn').innerText = "🔒 Login";
+                document.getElementById('adminLoginBtn').innerText = t.login;
                 document.getElementById('adminLoginBtn').classList.remove('logged-in');
+            }
+            bouwFeedUI(HuidigePosts);
+        });
+
+
+        window.handleAdminPoort = async function() {
+            if (auth.currentUser) {
+                await signOut(auth);
             } else {
-                let wachtwoordInvullen = prompt("Voer het Admin Wachtwoord in:");
-                if (wachtwoordInvullen === ADMIN_WACHTWOORD) {
-                    isAdmin = true;
-                    document.getElementById('adminPanel').style.display = 'block';
-                    document.getElementById('adminLoginBtn').innerText = "🔓 Log uit";
-                    document.getElementById('adminLoginBtn').classList.add('logged-in');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                    bouwFeedUI(HuidigePosts); // Update om verwijderknoppen te tonen
-                } else if (wachtwoordInvullen !== null) {
-                    alert("Fout wachtwoord!");
+                let email = prompt(t.promptEmail);
+                if (!email) return;
+                let wachtwoord = prompt(t.promptPass);
+                if (!wachtwoord) return;
+
+                try {
+                    await signInWithEmailAndPassword(auth, email, wachtwoord);
+                } catch (e) {
+                    alert(t.alertAuthError);
                 }
             }
         }
 
-        // Post echt opslaan in Firebase Cloud
+  
         window.publiceerPost = async function() {
             const titel = document.getElementById('postTitle').value.trim();
             const tekst = document.getElementById('postText').value.trim();
 
             if (!titel || !tekst) {
-                alert("Vul een titel en tekst in!");
+                alert(t.alertFillFields);
                 return;
             }
 
@@ -152,25 +236,25 @@
                     text: tekst,
                     image: gekozenAfbeeldingBase64,
                     timestamp: Date.now(),
-                    dateString: new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' }),
+                    // De datum string past zich nu ook automatisch aan aan de taal van de bezoeker!
+                    dateString: new Date().toLocaleDateString(browserLang === 'nl' ? 'nl-NL' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' }),
                     comments: []
                 });
 
-                // Reset het formulier
                 document.getElementById('postTitle').value = '';
                 document.getElementById('postText').value = '';
                 document.getElementById('postImage').value = '';
                 gekozenAfbeeldingBase64 = "";
             } catch (e) {
-                alert("Fout bij uploaden: " + e.message);
+                alert(t.alertUploadError);
             }
         }
 
-        // Reactie toevoegen aan Firebase document
+       
         window.voegReactieToe = async function(postId) {
             const naamInput = document.getElementById(`name_${postId}`);
             const msgInput = document.getElementById(`msg_${postId}`);
-            const naam = naamInput.value.trim() || "Anoniem";
+            const naam = naamInput.value.trim() || t.anonymous;
             const tekst = msgInput.value.trim();
 
             if (!tekst) return;
@@ -186,25 +270,25 @@
                 });
                 msgInput.value = '';
             } catch (e) {
-                alert("Reactie plaatsen mislukt: " + e.message);
+                alert(t.alertDeleteError);
             }
         }
 
-        // Post live deleten uit de cloud
+       
+        
         window.verwijderPost = async function(postId) {
-            if(confirm("Weet je zeker dat je deze post wilt verwijderen uit de live database?")) {
+            if(confirm(t.alertDeleteConfirm)) {
                 try {
                     await deleteDoc(doc(db, "posts", postId));
                 } catch (e) {
-                    alert("Verwijderen mislukt.");
+                    alert(t.alertDeleteError);
                 }
             }
         }
 
         let HuidigePosts = [];
 
-        // 🌟 LIVE SYNCHRONISATIE MET FIREBASE (Real-time listener)
-        // Telkens als jij of iemand anders een post of reactie plaatst, vernieuwt de site direct!
+    
         const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
         onSnapshot(q, (snapshot) => {
             HuidigePosts = [];
@@ -219,20 +303,21 @@
             container.innerHTML = '';
 
             if (posts.length === 0) {
-                container.innerHTML = `<p style="text-align:center; color:#64748b; margin-top:40px;">Er zijn nog geen live berichten geplaatst.</p>`;
+                container.innerHTML = `<p style="text-align:center; color:#64748b; margin-top:40px;">${t.noPosts}</p>`;
                 return;
             }
 
             posts.forEach(post => {
                 let afbeeldingHTML = post.image ? `<img src="${post.image}" class="post-img" alt="Post Image">` : '';
-                let verwijderKnopHTML = isAdmin ? `<button class="btn-admin-login" style="border-color:#ef4444; color:#ef4444; margin-top:10px; padding:4px 10px;" onclick="verwijderPost('${post.id}')">🗑️ Verwijder Post</button>` : '';
+                let verwijderKnopHTML = isAdmin ? `<button class="btn-admin-login" style="border-color:#ef4444; color:#ef4444; margin-top:10px; padding:4px 10px;" onclick="verwijderPost('${post.id}')">${t.deleteBtn}</button>` : '';
 
                 let reactiesHTML = '';
                 if(post.comments) {
-                    post.comments.forEach(c => {
+                    const gesorteerdeReacties = [...post.comments].sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0));
+                    gesorteerdeReacties.forEach(c => {
                         reactiesHTML += `
                             <div class="comment">
-                                <div class="comment-author">@${escapeHtml(c.author)}</div>
+                                <div class="comment-author">A${escapeHtml(c.author)}</div>
                                 <div class="comment-text">${escapeHtml(c.text)}</div>
                             </div>
                         `;
@@ -250,14 +335,14 @@
                         ${verwijderKnopHTML}
 
                         <div class="comments-section">
-                            <div class="comments-title">Reacties (${post.comments ? post.comments.length : 0})</div>
+                            <div class="comments-title">${t.commentsTitle} (${post.comments ? post.comments.length : 0})</div>
                             <div class="comment-list">${reactiesHTML}</div>
                             
                             <div class="comment-form">
                                 <div class="comment-input-row">
-                                    <input type="text" id="name_${post.id}" class="comment-name" placeholder="Naam...">
-                                    <input type="text" id="msg_${post.id}" class="comment-msg" placeholder="Schrijf een reactie..." onkeypress="if(event.key === 'Enter') voegReactieToe('${post.id}')">
-                                    <button class="btn-comment" onclick="voegReactieToe('${post.id}')">Drop</button>
+                                    <input type="text" id="name_${post.id}" class="comment-name" placeholder="${t.phName}">
+                                    <input type="text" id="msg_${post.id}" class="comment-msg" placeholder="${t.phComment}" onkeypress="if(event.key === 'Enter') voegReactieToe('${post.id}')">
+                                    <button class="btn-comment" onclick="voegReactieToe('${post.id}')">${t.btnComment}</button>
                                 </div>
                             </div>
                         </div>
